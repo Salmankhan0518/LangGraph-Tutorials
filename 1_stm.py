@@ -17,11 +17,24 @@ builder.add_edge(START, "call_model")
 
 graph = builder.compile()
 
-output1 = graph.invoke({"messages": [{"role": "user", "content": "Hi My name is Salman"}]})
-output2 = graph.invoke({"messages": [{"role": "user", "content": "What is my name"}]})
+from langgraph.checkpoint.memory import InMemorySaver
+
+checkpointer = InMemorySaver()
+graph = builder.compile(checkpointer=checkpointer)
+
+config = {"configurable": {"thread_id": "thread-1"}}
+
+output1 = graph.invoke({"messages": [{"role": "user", "content": "Hi My name is Salman"}]}, config)
+output2 = graph.invoke({"messages": [{"role": "user", "content": "What is my name"}]}, config)
 
 print("--- Output 1 ---")
 print(output1["messages"][-1].content)
 
 print("--- Output 2 ---")
 print(output2["messages"][-1].content)
+
+snap = graph.get_state(config)
+vals = snap.values
+
+for m in vals.get("messages", []):
+    print("-", type(m), __name__, ":", m.content)
