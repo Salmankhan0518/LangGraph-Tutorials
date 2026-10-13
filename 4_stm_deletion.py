@@ -36,5 +36,15 @@ graph = builder.compile(checkpointer=InMemorySaver())
 
 config = {"configurable": {"thread_id": "t1"}}
 
+# Run multiple turns
+graph.invoke({"messages": [{"role": "user", "content": "Hi, I'm Nitish"}]}, config)
+graph.invoke({"messages": [{"role": "user", "content": "Tell me about LangGraph"}]}, config)
+graph.invoke({"messages": [{"role": "user", "content": "Now explain checkpointers"}]}, config)
+graph.invoke({"messages": [{"role": "user", "content": "What is Langchain"}]}, config)
+graph.invoke({"messages": [{"role": "user", "content": "What is Quantum Mechanics"}]}, config)
+graph.invoke({"messages": [{"role": "user", "content": "What is Gen AI"}]}, config)
+graph.invoke({"messages": [{"role": "user", "content": "What is my name"}]}, config)
 
 
+snap = graph.get_state(config)
+print("Stored messages after cleanup:", len(snap.values["messages"]))
