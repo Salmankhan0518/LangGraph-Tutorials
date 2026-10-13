@@ -48,3 +48,16 @@ with PostgresSaver.from_conn_string(DB_URI) as checkpointer:
     print("--- Output of Thread 2 ---")
     print("Thread-2:", out2["messages"][-1].content)
 
+
+from langgraph.checkpoint.postgres import PostgresSaver
+
+DB_URI = "postgresql://postgres:postgres@localhost:5442/postgres"
+t1 = {"configurable": {"thread_id": "thread-1"}}
+
+with PostgresSaver.from_conn_string(DB_URI) as cp:
+    g = builder.compile(checkpointer=cp)
+
+    snap = g.get_state(t1)  # <-- pulls from Postgres
+    msgs = snap.values.get("messages", [])
+    print("Last message:", msgs[-1].content if msgs else None)
+
